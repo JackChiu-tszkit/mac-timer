@@ -81,18 +81,15 @@ MacTimer/
 
 ## Verification
 
-Prepared on 2026-11-19.
+Checked on 2026-11-19.
 
-This repository was written on a Windows machine. That machine cannot compile, sign, run, or install a macOS app, so the following were not executed here:
+GitHub Actions, on Xcode 26.6, ran the test suite and built `Timer.dmg` for release v1.0.0. The suite finished with 26 tests and 0 failures. The disk image is attached to that release.
 
-- `xcodebuild` build
-- the XCTest suite
-- launching `Timer.app`
+These items were not manually checked:
+
 - alert sound playback
-- macOS notifications
-- menu bar behavior
+- the macOS notification banner
+- menu bar clicks
 - sleep and wake
-- `dist/Timer.dmg`
 - launch at login
-
-The engine, settings store, tone generator, and sleep policy have automated tests in `MacTimerTests`. Run `./scripts/package.sh` on a Mac to execute them and produce the disk image. Until that run succeeds, treat the Mac binary and the installer as unverified.
+- installing the disk image on a physical Mac
