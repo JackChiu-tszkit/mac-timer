@@ -58,9 +58,13 @@ The project is ad-hoc signed so it can build without an Apple Developer team. Th
 
 Launch at login uses `SMAppService`. macOS only enables that after the app has a stable location, typically `/Applications`.
 
+## Release
+
+Pushing a tag named `v*` runs GitHub Actions on a Mac. The workflow tests the app, builds `Timer.app`, and publishes `Timer.dmg` on the GitHub Release for that tag.
+
 ## Installation
 
-Open `dist/Timer.dmg`, then drag Timer to Applications. Launch Timer from Applications or Spotlight. The menu bar shows a timer icon. While a countdown is running or paused, the menu bar also shows the remaining time.
+Open `Timer.dmg`, then drag Timer to Applications. Launch Timer from Applications or Spotlight. The menu bar shows a timer icon. While a countdown is running or paused, the menu bar also shows the remaining time.
 
 Closing the main window quits. The minimize button, or the close button when Settings is set to Hide in Menu Bar, hides the window and leaves the countdown running.
 

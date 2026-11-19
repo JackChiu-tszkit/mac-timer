@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Show the selected Xcode
+        run: xcodebuild -version
+
+      - name: Test, build, and create the disk image
+        run: bash scripts/package.sh
+
+      - name: Upload the disk image
+        uses: actions/upload-artifact@v4
+        with:
+          name: Timer-dmg
+          path: dist/Timer.dmg
+          if-no-files-found: error
+
+      - name: Publish the GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" dist/Timer.dmg \
+            --title "Timer ${version}" \
+            --notes "$(cat <<EOF
+          ## Timer ${version}
+
+          Native Mac countdown timer.
+
+          - Set hours, minutes, and seconds. Start, pause, resume, and reset.
+          - Presets: 1, 5, 10, 15, 25, 30, and 60 minutes. A preset starts immediately.
+          - Three local alert sounds, volume, mute, preview, and optional repeat until dismissed.
+          - The menu bar item keeps the countdown running while the window is hidden.
+          - Always on top, a mini timer, and light, dark, or system theme.
+          - No account, no network, and no telemetry.
+
+          ### Install
+
+          Open Timer.dmg and drag Timer to Applications.
+
+          The app is ad-hoc signed so it can be built without an Apple Developer account. On first launch, macOS may ask you to allow it under System Settings, Privacy & Security.
+
+          Launch at login works after the app is in the Applications folder.
+
+          ### Verification
+
+          GitHub Actions built this disk image and ran the automated tests. Sleep and wake, speaker playback, and the notification banner were not manually checked.
+          EOF
+          )"

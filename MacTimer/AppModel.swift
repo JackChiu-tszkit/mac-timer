@@ -38,9 +38,11 @@ final class AppModel: ObservableObject {
         }
         syncFieldsFromEngine()
         refresh()
-        notifications.prepare()
-        if loaded.launchOnStartup {
-            LoginItemService.apply(true)
+        if !Self.isRunningTests {
+            notifications.prepare()
+            if loaded.launchOnStartup {
+                LoginItemService.apply(true)
+            }
         }
         didApplyLoginItem = true
         ensureTicker()
@@ -243,6 +245,14 @@ final class AppModel: ObservableObject {
             $0.lastMinutes = (total % 3600) / 60
             $0.lastSeconds = total % 60
         }
+    }
+
+    private static var isRunningTests: Bool {
+        let environment = ProcessInfo.processInfo.environment
+        if environment["XCTestConfigurationFilePath"] != nil || environment["XCTestSessionIdentifier"] != nil {
+            return true
+        }
+        return ProcessInfo.processInfo.arguments.contains { $0.contains("XCTest") }
     }
 
     private func ensureTicker() {
